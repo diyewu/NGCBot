@@ -34,8 +34,6 @@ class RoomMsgHandle:
         self.Administrators = configData['Administrators']
         self.aiWenKeyWords = configData['functionKeyWord']['aiWenWord']
         self.aiWenPoint = configData['pointConfig']['functionPoint']['awIp']
-        self.threatBookWords = configData['functionKeyWord']['threatBookWord']
-        self.threatBookPoint = configData['pointConfig']['functionPoint']['wbIp']
         self.md5KeyWords = configData['functionKeyWord']['md5Words']
         self.md5Point = configData['pointConfig']['functionPoint']['md5']
         self.signKeyWord = configData['pointConfig']['sign']['word']
@@ -46,8 +44,6 @@ class RoomMsgHandle:
         self.joinRoomMsg = configData['customMsg']['joinRoomMsg']
         self.joinRoomCardData = configData['customMsg']['JoinRoomCard']
         self.appointJoinRoomMsgs = configData['customMsg']['appointJsonRoomMsgs']
-        self.feishuWords = configData['functionKeyWord']['feishuWords']
-        self.feishuPoint = configData['pointConfig']['functionPoint']['feishuPoint']
 
     def mainHandle(self, msg):
         roomId = msg.roomid
@@ -195,12 +191,6 @@ class RoomMsgHandle:
             if judgePointFunction(senderPoint, self.aiWenPoint):
                 self.Dms.reducePoint(sender, roomId, self.aiWenPoint)
                 lock = 1
-        # 微步IPV4查询
-        elif judgeSplitAllEqualWord(content, self.threatBookWords):
-            pointLock = 1
-            if judgePointFunction(senderPoint, self.threatBookPoint):
-                self.Dms.reducePoint(sender, roomId, self.threatBookPoint)
-                lock = 1
         # CMD5查询
         elif judgeSplitAllEqualWord(content, self.md5KeyWords):
             pointLock = 1
@@ -215,16 +205,10 @@ class RoomMsgHandle:
                 self.Dms.reducePoint(sender, roomId, self.aiMsgPoint)
                 lock = 1
         # Ai画图
-        elif judgeAtMe(self.wcf.self_wxid, content, atUserLists) and judgeOneEqualListWord(noAtMsg, self.aiPicKeyWords):
+        elif judgeSplitAllEqualWord(content, self.aiPicKeyWords):
             pointLock = 1
             if judgePointFunction(senderPoint, self.aiPicPoint):
                 self.Dms.reducePoint(sender, roomId, self.aiPicPoint)
-                lock = 1
-        # 飞书Wiki查询
-        elif judgeSplitAllEqualWord(content, self.feishuWords):
-            pointLock = 1
-            if judgePointFunction(senderPoint, self.feishuPoint):
-                self.Dms.reducePoint(sender, roomId, self.feishuPoint)
                 lock = 1
         # 签到
         elif judgeEqualWord(content, self.signKeyWord):

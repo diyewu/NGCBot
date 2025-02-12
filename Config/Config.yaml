@@ -176,9 +176,6 @@ adminFunctionWord:
     - '发'
     - '发送'
 
-
-
-
 ## 积分功能配置
 pointConfig:
   # 签到功能
@@ -191,16 +188,12 @@ pointConfig:
   functionPoint:
     # Md5积分配置
     md5: '10'
-    # 微步IP查询积分配置
-    wbIp: '10000'
     # 埃文IP地址查询配置
     awIp: '10000'
     # Ai对话积分配置
     aiPoint: '10'
     # Ai画图配置
     aiPicPoint: '10'
-    # 飞书Wiki查询
-    feishuPoint: '10000'
   # 增加积分关键词
   addPointWord:
     - '加'
@@ -249,13 +242,6 @@ functionKeyWord:
   dogWord:
     - '舔狗日记'
     - '舔我'
-  # 触发微步IP查询关键词
-  threatBookWord:
-    - 'ip查询'
-    - 'IP查询'
-    - '查询ip'
-    - '查询IP'
-    - '微步查询'
   # 触发埃文IP地址查询关键词
   aiWenWord:
     - 'ip定位'
@@ -287,11 +273,7 @@ functionKeyWord:
   # Ai画图关键词
   aiPic:
     - '画'
-    - '画一个'
-  # 飞书知识库查询关键词
-  feishuWords:
-    - '搜索'
-    - '查询漏洞'
+    - '画图'
   # 短剧搜索查询关键词
   shortPlayWords:
     - '短剧搜索'
@@ -301,6 +283,10 @@ functionKeyWord:
     - '塔罗牌'
     - '塔罗'
     - '占卜'
+  # 点歌关键词
+  musicWords:
+    - '点歌'
+    - '点'
   # 群聊消息总结关键词
   summarizeMsgWord:
     - '总结群聊'
@@ -319,8 +305,6 @@ apiServer:
     cmd5Email: ''
     # cmd5 Key
     cmd5Key: ''
-    # 微步Key
-    threatBookKey: ''
     # 埃文Key
     aiWenKey: ''
     # 高德 Key
@@ -338,16 +322,20 @@ apiServer:
     # 注意大小写 否则无效
     aiPriority:
       2: 'deepSeek'
-      1: 'kiMi'
+      9: 'kiMi'
       3: 'hunYuan'
       4: 'sparkAi'
       5: 'openAi'
       6: 'qianFan'
       7: 'bigModel'
+      8: 'localDeepSeek'
+      1: 'siliconFlow'
+      10: 'douBao'
     # 画图Ai优先级
     aiPicPriority:
       1: 'sparkAi'
       2: 'qianFan'
+      3: 'douBao'
     # Ai角色配置
     systemAiRule: '你叫NGCBot, 你的主人是云山, 你隶属于久安信息技术有限公司旗下NGC660安全实验室, 是一名网络安全专家'
     # 星火大模型 4.0 Ultra模型 + 图像生成模型
@@ -367,7 +355,8 @@ apiServer:
       # Open_Ai接口
       openAiApi: 'https://api.xiaoai.plus/v1/chat/completions'
       # OpenAi Key
-      openAiKey: 'Bearer sk-'
+      openAiKey: 'Bearer {key填这里，前面的Bearer保留}'
+      openAiModel: 'gpt-3.5-turbo'
     # 千帆大模型  ERNIE-4.0-Turbo-8K模型
     qianFan:
       # 应用中的Api Key
@@ -390,18 +379,46 @@ apiServer:
       hunYuanSecretId: ''
       # 腾讯云SecretKey
       hunYuanSecretKey: ''
+      hunYuanModel: 'hunyuan-pro'
     # Kimi大模型
     kiMi:
       kiMiApi: 'https://api.moonshot.cn/v1/chat/completions'
-      kiMiKey: 'sk-'
+      kiMiKey: ''
+      kiMiModel: 'moonshot-v1-8k'
     # 智谱大模型
     bigModel:
       bigModelApi: 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
-      bigModelKey: 'Bearer '
+      bigModelKey: 'Bearer {key填这里，前面的Bearer保留}'
+      bigModelModel: 'glm-4-plus'
     # DeepSeek 模型
     deepSeek:
       deepSeekApi: 'https://api.deepseek.com/chat/completions'
-      deepSeekKey: 'Bearer sk-'
+      deepSeekKey: 'Bearer {key填这里，前面的Bearer保留}'
+      deepSeekModel: 'deepseek-chat'
+    # DeepSeek 本地模型
+    localDeepSeek:
+      localDeepSeekApi: 'http://127.0.0.1:11434/api/chat'
+      localDeepSeekModel: 'deepseek-r1:8b'
+    # 硅基流动
+    siliconFlow:
+      siliconFlowApi: 'https://api.siliconflow.cn/v1/chat/completions'
+      siliconFlowKey: 'Bearer {key填这里，前面的Bearer保留}'
+      siliconFlowModel: 'deepseek-ai/DeepSeek-R1-Distill-Llama-70B'
+    # 豆包
+    ## douBaoModel参数为方舟推理接入点，创建后填写即可
+    ## https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint
+    ## douBaoAk&Sk 文生图需要填写 只使用文本对话不需要填写
+    douBao:
+      douBaoApi: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions'
+      douBaoKey: 'Bearer {key填这里，前面的Bearer保留}'
+      douBaoModel: 'ep-'
+      # 文生图需要填写以下内容 不使用文生图不需要填写
+      ## ReqKey以及ModelVersion需要根据火山文档填写
+      douBaoAk: '火山AK'
+      douBaoSk: '火山SK'
+      douBaoReqKey: 'high_aes'
+      douBaoPicModelVersion: 'anime_v1.3'
+
   # Dp接口 塔罗牌占卜
   dpTaLuoApi: 'https://api.dudunas.top/api/taluo?AppSecret={}'
   # Dp接口 视频去水印API
@@ -427,6 +444,11 @@ apiServer:
   feishuWiki: 'https://open.feishu.cn/open-apis/wiki/v1/nodes/search'
   # 短剧搜索 API接口
   shortPlayApi: 'https://api.dudunas.top/api/duanju?search={}'
+  # 点歌 API接口
+  musicApi:
+    - 'https://www.hhlqilongzhu.cn/api/dg_kugouSQ.php?msg={}&n=1&type=json'
+    - 'https://qqmusic.qqovo.cn/getSearchByKey?key={}&page=1&limit=1'
+    - 'https://www.hhlqilongzhu.cn/api/dg_wyymusic.php?gm={}&n=1&num=1&type=json'
   # 图片API配置
   picApi:
     - 'https://api.btstu.cn/sjbz/api.php?lx=dongman&format=images&method=mobile&lx=meizi'

@@ -16,12 +16,10 @@ class PointFunction:
         self.Dms = DbMainServer()
         configData = Cs.returnConfigData()
         self.aiWenKeyWords = configData['functionKeyWord']['aiWenWord']
-        self.threatBookWords = configData['functionKeyWord']['threatBookWord']
         self.md5KeyWords = configData['functionKeyWord']['md5Words']
         self.signKeyWord = configData['pointConfig']['sign']['word']
         self.aiPicKeyWords = configData['functionKeyWord']['aiPic']
         self.searchPointKeyWord = configData['pointConfig']['queryPointWord']
-        self.feishuWords = configData['functionKeyWord']['feishuWords']
 
     def mainHandle(self, message):
         content = message.content.strip()
@@ -46,18 +44,6 @@ class PointFunction:
                 aiWenMessage = aiWenData['message']
                 self.wcf.send_text(f'@{senderName} 查询结果如下\n{aiWenMessage}',
                                    receiver=roomId, aters=sender)
-
-            # 微步IPV4查询
-            elif judgeSplitAllEqualWord(content, self.threatBookWords):
-                ip = content.split(' ')[-1]
-                threatMsg = self.Ams.getThreatBook(ip)
-                if not threatMsg:
-                    self.wcf.send_text(
-                        f'@{senderName} 微步IPV4地址查询接口出现错误, 请联系超管查看控制台输出日志',
-                        receiver=roomId, aters=sender)
-                    return
-                self.wcf.send_text(f'@{senderName}\n{threatMsg}', receiver=roomId,
-                                   aters=sender)
 
             # CMD5查询
             elif judgeSplitAllEqualWord(content, self.md5KeyWords):
@@ -110,20 +96,11 @@ class PointFunction:
                     f'@{senderName} Ai对话接口出现错误, 请联系超管查看控制台输出日志',
                     receiver=roomId, aters=sender)
             # Ai画图
-            elif judgeAtMe(self.wcf.self_wxid, content, atUserLists) and judgeOneEqualListWord(noAtMsg,
-                                                                                               self.aiPicKeyWords):
-                aiPicPath = self.Ams.getAiPic(noAtMsg)
+            elif judgeSplitAllEqualWord(content, self.aiPicKeyWords):
+                aiPicPath = self.Ams.getAiPic(content.split(' ')[-1])
                 if aiPicPath:
                     self.wcf.send_image(path=aiPicPath, receiver=roomId)
                     return
                 self.wcf.send_text(
                     f'@{senderName} Ai画图接口出现错误, 请联系超管查看控制台输出日志',
                     receiver=roomId, aters=sender)
-            elif judgeSplitAllEqualWord(content, self.feishuWords):
-                vulnMsg = self.Ams.getFeishuVuln(content.split(' ')[-1])
-                if not vulnMsg:
-                    self.wcf.send_text(
-                        f'@{senderName} 飞书Wiki接口出现错误, 请联系超管查看控制台输出日志',
-                        receiver=roomId, aters=sender)
-                    return
-                self.wcf.send_text(f'@{senderName}\n{vulnMsg}', receiver=roomId, aters=sender)

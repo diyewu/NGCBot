@@ -2,6 +2,7 @@ from meme_generator import get_meme, get_meme_keys
 import FileCache.FileCacheServer as Fcs
 import Config.ConfigServer as Cs
 from OutPut.outPut import op
+import lz4.block as lb
 import requests
 import asyncio
 import random
@@ -31,6 +32,7 @@ class HappyApi:
         self.dpVideoAnalysisApi = configData['apiServer']['dpVideoAnalysisAPi']
         self.dpWechatVideoApi = configData['apiServer']['dpWechatVideoApi']
         self.dpTaLuoApi = configData['apiServer']['dpTaLuoApi']
+        self.musicApi = configData['apiServer']['musicApi']
 
     def downloadFile(self, url, savePath):
         """
@@ -49,6 +51,77 @@ class HappyApi:
         except Exception as e:
             op(f'[-]: 通用下载文件函数出现错误, 错误信息: {e}')
             return None
+
+    def getMusic(self, musicName):
+        op(f'[*]: 正在调用点歌接口... ...')
+        musicApi = self.musicApi[0]
+        try:
+            jsonData = requests.get(musicApi.format(musicName), verify=True, timeout=30).json()
+            songName = jsonData.get('title')
+            singerName = jsonData.get('singer')
+            songPic = jsonData.get('cover')
+            dataUrl = jsonData.get('link')
+            playUrl = jsonData.get('music_url')
+            xml_message = f"""<?xml version="1.0"?>
+<msg>
+	<appmsg appid="wx485a97c844086dc9" sdkver="0">
+		<title>{songName}</title>
+		<des>{singerName}</des>
+		<action>view</action>
+		<type>3</type>
+		<showtype>0</showtype>
+		<content />
+		<url>{dataUrl}</url>
+		<dataurl>{playUrl}</dataurl>
+		<lowurl>{playUrl}</lowurl>
+		<lowdataurl>{playUrl}</lowdataurl>
+		<recorditem />
+		<thumburl />
+		<messageaction />
+		<laninfo />
+		<extinfo />
+		<sourceusername />
+		<sourcedisplayname />
+		<commenturl />
+		<appattach>
+			<totallen>0</totallen>
+			<attachid />
+			<emoticonmd5></emoticonmd5>
+			<fileext />
+			<aeskey></aeskey>
+		</appattach>
+		<webviewshared>
+			<publisherId />
+			<publisherReqId>0</publisherReqId>
+		</webviewshared>
+		<weappinfo>
+			<pagepath />
+			<username />
+			<appid />
+			<appservicetype>0</appservicetype>
+		</weappinfo>
+		<websearch />
+		<songalbumurl>{songPic}</songalbumurl>
+	</appmsg>
+	<fromusername>wxid_gj3eh7uw8kj721</fromusername>
+	<scene>0</scene>
+	<appinfo>
+		<version>29</version>
+		<appname>摇一摇搜歌</appname>
+	</appinfo>
+	<commenturl />
+</msg>"""
+            # 将文本编码成字节
+            text_bytes = xml_message.encode('utf-8')
+            # 使用 lz4 压缩
+            compressed_data = lb.compress(text_bytes,store_size=False)
+            # 将压缩后的数据转为十六进制字符串，以便存储到数据库
+            compressed_data_hex = compressed_data.hex()
+            return compressed_data_hex
+        except Exception as e:
+            op(f'[-]: 点歌API出现错误, 错误信息: {e}')
+            return None
+
 
     def getTaLuo(self, ):
         """
@@ -200,7 +273,7 @@ class HappyApi:
                     break
                 continue
         if not fishPath:
-            op(f'[-]: 魔域日历接口出现错误, 请检查！')
+            op(f'[-]: 摸鱼日历接口出现错误, 请检查！')
         return fishPath
 
     def getKfc(self, ):
@@ -284,4 +357,5 @@ if __name__ == '__main__':
     #     '3.84 复制打开抖音，看看【SQ的小日常的作品】师傅：门可以让我踹吗 # 情侣 # 搞笑 # 反转... https://v.douyin.com/iydr37xU/ bAg:/ F@H.vS 01/06'))
     # print(Ha.getWechatVideo('14258814955767007275', '14776806611926650114_15_140_59_32_1735528000805808'))
     # print(Ha.getTaLuo())
-    print(Ha.getFish())
+    # print(Ha.getFish())
+    print(Ha.getMusic('晴天'))

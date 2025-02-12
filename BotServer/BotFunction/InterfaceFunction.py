@@ -7,6 +7,8 @@ import time
 import os
 
 
+getIdNameInt = 0
+
 def getWithdrawMsgData(content):
     """
     提取撤回消息的 ID
@@ -73,14 +75,20 @@ def getIdName(wcf, Id):
     :return:
     """
     try:
+        global getIdNameInt
         name_list = wcf.query_sql("MicroMsg.db",
                                   f"SELECT UserName, NickName FROM Contact WHERE UserName = '{Id}';")
         if not name_list:
             return getIdName(wcf, Id)
         name = name_list[0]['NickName']
+        getIdNameInt += 1
+        if getIdNameInt == 4:
+            getIdNameInt = 0
+            return '未获取的昵称'
         return name
     except Exception as e:
         op(f'[~]: 获取好友或者群聊昵称出现错误, 错误信息: {e}')
+        time.sleep(1)
         return getIdName(wcf, Id)
 
 
