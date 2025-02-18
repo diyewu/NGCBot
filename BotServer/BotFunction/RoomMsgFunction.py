@@ -32,7 +32,7 @@ class RoomMsgFunction:
             self.Dms.addRoomContent(roomId, msgType, sender, senderName, msgId, content)
             # 当日消息总结
             if judgeEqualListWord(content, self.summarizeMsgKeyWords):
-                roomName = getIdName(self.wcf, id, roomId)
+                roomName = getIdName(self.wcf, roomId)
                 aiContent = f'群聊名称: {roomName}\n{self.Dms.showRoomContent(roomId)}'
                 aiMessages = [{
                     "role": "system",

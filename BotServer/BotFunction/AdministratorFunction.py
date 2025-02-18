@@ -28,11 +28,11 @@ class AdministratorFunction:
                     for atUser in atUserLists:
                         if self.Dms.addAdmin(atUser, roomId):
                             self.wcf.send_text(
-                                f'@{getIdName(sender, roomId)}\n管理员 [{getIdName(atUser, roomId)}] 添加成功',
+                                f'@{getIdName(self.wcf, sender, roomId)}\n管理员 [{getIdName(self.wcf, atUser, roomId)}] 添加成功',
                                 receiver=roomId, aters=sender)
                         else:
                             self.wcf.send_text(
-                                f'@{getIdName(sender, roomId)}\n群成员 [{getIdName(atUser, roomId)}] 已是管理员',
+                                f'@{getIdName(self.wcf, sender, roomId)}\n群成员 [{getIdName(self.wcf, atUser, roomId)}] 已是管理员',
                                 receiver=roomId, aters=sender)
             # 删除管理员
             elif judgeEqualListWord(noAtMsg, self.delAdminKeyWords):
@@ -40,10 +40,10 @@ class AdministratorFunction:
                     for atUser in atUserLists:
                         if self.Dms.delAdmin(atUser, roomId):
                             self.wcf.send_text(
-                                f'@{getIdName(sender, roomId)}\n管理员 [{getIdName(atUser, roomId)}] 删除成功',
+                                f'@{getIdName(self.wcf, sender, roomId)}\n管理员 [{getIdName(self.wcf, atUser, roomId)}] 删除成功',
                                 receiver=roomId, aters=sender)
                         else:
                             self.wcf.send_text(
-                                f'@{getIdName(sender, roomId)}\n群成员 [{getIdName(atUser, roomId)}] 已不是管理员',
+                                f'@{getIdName(self.wcf, sender, roomId)}\n群成员 [{getIdName(self.wcf, atUser, roomId)}] 已不是管理员',
                                 receiver=roomId, aters=sender)
 

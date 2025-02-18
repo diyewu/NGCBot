@@ -44,7 +44,7 @@ class AdminFunction:
                                 receiver=roomId, aters=atUser)
                         else:
                             self.wcf.send_text(
-                                f'@{getIdName(self.wcf, sender, roomId)}\n {getIdName(atUser, roomId)} 用户积分添加失败, 请查看日志',
+                                f'@{getIdName(self.wcf, sender, roomId)}\n {getIdName(self.wcf, atUser, roomId)} 用户积分添加失败, 请查看日志',
                                 receiver=roomId, aters=sender)
             # 扣除积分
             elif judgeSplitAllEqualWord(noAtMsg, self.delPointKeyWords):
@@ -53,11 +53,11 @@ class AdminFunction:
                     for atUser in atUserLists:
                         if self.Dms.reducePoint(atUser, roomId, point):
                             self.wcf.send_text(
-                                f'@{getIdName(atUser, roomId)}\n 基于你的表现, 管理员扣除了你 {point} 分',
+                                f'@{getIdName(self.wcf, atUser, roomId)}\n 基于你的表现, 管理员扣除了你 {point} 分',
                                 receiver=roomId, aters=atUser)
                         else:
                             self.wcf.send_text(
-                                f'@{getIdName(self.wcf, sender, roomId)}\n {getIdName(atUser, roomId)} 用户积分扣除失败, 请查看日志',
+                                f'@{getIdName(self.wcf, sender, roomId)}\n {getIdName(self.wcf, atUser, roomId)} 用户积分扣除失败, 请查看日志',
                                 receiver=roomId, aters=atUser)
             # 添加白名单群聊
             elif judgeEqualListWord(content, self.addWhiteRoomKeyWords):
@@ -98,11 +98,11 @@ class AdminFunction:
                 for atWxId in atUserLists:
                     if self.wcf.del_chatroom_members(roomId, atWxId):
                         self.wcf.send_text(
-                            f'@{getIdName(atWxId, roomId)} 基于你的表现, 给你移出群聊的奖励',
+                            f'@{getIdName(self.wcf, atWxId, roomId)} 基于你的表现, 给你移出群聊的奖励',
                             receiver=roomId)
                     else:
                         self.wcf.send_text(
-                            f'@{getIdName(self.wcf, sender, roomId)} [{getIdName(atWxId, roomId)}] 移出群聊失败',
+                            f'@{getIdName(self.wcf, sender, roomId)} [{getIdName(self.wcf, atWxId, roomId)}] 移出群聊失败',
                             receiver=roomId, aters=sender)
             # # 添加黑名单公众号 阉割
             # elif judgeEqualListWord(content, self.addBlackGhKeyWords):
