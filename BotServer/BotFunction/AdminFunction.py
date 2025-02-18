@@ -40,7 +40,7 @@ class AdminFunction:
                     for atUser in atUserLists:
                         if self.Dms.addPoint(atUser, roomId, point):
                             self.wcf.send_text(
-                                f'@{getIdName(self.wcf, sender, roomId)}\n 基于你的表现, 管理员施舍了你 {point} 分',
+                                f'@{getIdName(self.wcf, atUser, roomId)}\n 基于你的表现, 管理员施舍了你 {point} 分',
                                 receiver=roomId, aters=atUser)
                         else:
                             self.wcf.send_text(
