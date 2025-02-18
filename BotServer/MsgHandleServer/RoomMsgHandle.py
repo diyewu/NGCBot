@@ -227,7 +227,7 @@ class RoomMsgHandle:
         else:
             if pointLock:
                 self.wcf.send_text(
-                    f'@{self.wcf.get_alias_in_chatroom(sender, roomId)} 积分不足, 请签到或祈求管理员施舍 ~~~',
+                    f'@{getIdName(sender, roomId)} 积分不足, 请签到或祈求管理员施舍 ~~~',
                     receiver=roomId, aters=sender)
 
 

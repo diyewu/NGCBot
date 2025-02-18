@@ -39,7 +39,6 @@ class HappyFunction:
         roomId = message.roomid
         msgType = message.type
         atUserLists, noAtMsg = getAtData(self.wcf, message)
-        senderName = self.wcf.get_alias_in_chatroom(sender, roomId)
         avatarPathList = []
         if msgType == 1:
             # 美女图片
@@ -47,7 +46,7 @@ class HappyFunction:
                 picPath = self.Ams.getGirlPic()
                 if not picPath:
                     self.wcf.send_text(
-                        f'@{senderName} 美女图片接口出现错误, 请联系超管查看控制台输出日志 ~~~',
+                        f'@{getIdName(self.wcf, sender, roomId)} 美女图片接口出现错误, 请联系超管查看控制台输出日志 ~~~',
                         receiver=roomId, aters=sender)
                     return
                 self.wcf.send_image(picPath, receiver=roomId)
@@ -56,7 +55,7 @@ class HappyFunction:
                 videoPath = self.Ams.getGirlVideo()
                 if not videoPath:
                     self.wcf.send_text(
-                        f'@{senderName} 美女视频接口出现错误, 请联系超管查看控制台输出日志 ~~~',
+                        f'@{getIdName(self.wcf, sender, roomId)} 美女视频接口出现错误, 请联系超管查看控制台输出日志 ~~~',
                         receiver=roomId, aters=sender)
                     return
                 self.wcf.send_file(videoPath, receiver=roomId)
@@ -66,7 +65,7 @@ class HappyFunction:
                 fishPath = self.Ams.getFish()
                 if not fishPath:
                     self.wcf.send_text(
-                        f'@{senderName} 摸鱼日历接口出现错误, 请联系超管查看控制台输出日志 ~~~',
+                        f'@{getIdName(self.wcf, sender, roomId)} 摸鱼日历接口出现错误, 请联系超管查看控制台输出日志 ~~~',
                         receiver=roomId, aters=sender)
                     return
                 self.wcf.send_file(fishPath, receiver=roomId)
@@ -76,11 +75,11 @@ class HappyFunction:
                 kfcText = self.Ams.getKfc()
                 if not kfcText:
                     self.wcf.send_text(
-                        f'@{senderName} KFC疯狂星期四接口出现错误, 请联系超管查看控制台输出日志 ~~~',
+                        f'@{getIdName(self.wcf, sender, roomId)} KFC疯狂星期四接口出现错误, 请联系超管查看控制台输出日志 ~~~',
                         receiver=roomId, aters=sender)
                     return
                 self.wcf.send_text(
-                    f'@{senderName} {kfcText}',
+                    f'@{getIdName(self.wcf, sender, roomId)} {kfcText}',
                     receiver=roomId, aters=sender)
 
             # 舔狗日记
@@ -88,18 +87,18 @@ class HappyFunction:
                 dogText = self.Ams.getDog()
                 if not dogText:
                     self.wcf.send_text(
-                        f'@{senderName} 舔狗日记接口出现错误, 请联系超管查看控制台输出日志 ~~~',
+                        f'@{getIdName(self.wcf, sender, roomId)} 舔狗日记接口出现错误, 请联系超管查看控制台输出日志 ~~~',
                         receiver=roomId, aters=sender)
                     return
                 self.wcf.send_text(
-                    f'@{senderName} {dogText}',
+                    f'@{getIdName(self.wcf, sender, roomId)} {dogText}',
                     receiver=roomId, aters=sender)
             # 早报
             elif judgeEqualListWord(content, self.morningPageKeyWords):
                 morningPage = self.Ams.getMorningNews()
                 if not morningPage:
                     self.wcf.send_text(
-                        f'@{senderName} 早报接口出现错误, 请联系超管查看控制台输出日志 ~~~',
+                        f'@{getIdName(self.wcf, sender, roomId)} 早报接口出现错误, 请联系超管查看控制台输出日志 ~~~',
                         receiver=roomId, aters=sender)
                     return
                 self.wcf.send_text(morningPage, receiver=roomId)
@@ -108,7 +107,7 @@ class HappyFunction:
                 eveningPage = self.Ams.getEveningNews()
                 if not eveningPage:
                     self.wcf.send_text(
-                        f'@{senderName} 晚报接口出现错误, 请联系超管查看控制台输出日志 ~~~',
+                        f'@{getIdName(self.wcf, sender, roomId)} 晚报接口出现错误, 请联系超管查看控制台输出日志 ~~~',
                         receiver=roomId, aters=sender)
                     return
                 self.wcf.send_text(eveningPage, receiver=roomId)
@@ -117,7 +116,7 @@ class HappyFunction:
                 playName = content.split(' ')[-1]
                 content = self.Ams.getShortPlay(playName)
                 if content:
-                    self.wcf.send_text(f'@{senderName}\n{content}', receiver=roomId, aters=sender)
+                    self.wcf.send_text(f'@{getIdName(self.wcf, sender, roomId)}\n{content}', receiver=roomId, aters=sender)
             # 抖音视频解析
             elif judgeInWord(content, '复制打开抖音'):
                 videoPath = self.Ams.getVideoAnalysis(content)
@@ -128,7 +127,7 @@ class HappyFunction:
                 musicName = content.split(' ')[1::]
                 musicHexData = self.Ams.getMusic(musicName)
                 if not musicHexData:
-                    self.wcf.send_text(f'@{senderName} 点歌接口出现错误, 请稍后再试 ~~~', receiver=roomId, aters=sender)
+                    self.wcf.send_text(f'@{getIdName(self.wcf, sender, roomId)} 点歌接口出现错误, 请稍后再试 ~~~', receiver=roomId, aters=sender)
                     return
                 data = self.wcf.query_sql('MSG0.db', "SELECT * FROM MSG where type = 49  limit 1")
                 self.wcf.query_sql('MSG0.db',
@@ -139,9 +138,9 @@ class HappyFunction:
                 content, picPath = self.Ams.getTaLuo()
                 if content and picPath:
                     self.wcf.send_image(path=picPath, receiver=roomId)
-                    self.wcf.send_text(f'@{senderName}\n\n{content}', receiver=roomId, aters=sender)
+                    self.wcf.send_text(f'@{getIdName(self.wcf, sender, roomId)}\n\n{content}', receiver=roomId, aters=sender)
                 else:
-                    self.wcf.send_text(f'@{senderName}\n塔罗牌占卜接口出现错误, 请联系超管查看控制台输出 ~~~', receiver=roomId, aters=sender)
+                    self.wcf.send_text(f'@{getIdName(self.wcf, sender, roomId)}\n塔罗牌占卜接口出现错误, 请联系超管查看控制台输出 ~~~', receiver=roomId, aters=sender)
 
             # 随机表情
             elif judgeEqualListWord(content, self.emoRandomKeyWords):
@@ -204,19 +203,19 @@ class HappyFunction:
                 msg += '【双人表情】使用方法: \n表情选项@某人 \n双人表情选项如下\n'
                 for twoEmoKey in self.emoTwoKeyWordsData.keys():
                     msg += twoEmoKey + '\n'
-                self.wcf.send_text(f'@{senderName}\n{msg}', receiver=roomId, aters=sender)
+                self.wcf.send_text(f'@{getIdName(self.wcf, sender, roomId)}\n{msg}', receiver=roomId, aters=sender)
             # 帮助菜单
             elif judgeEqualListWord(content, self.helpKeyWords):
                 helpMsg = '[爱心]=== NGCBot菜单 ===[爱心]\n'
                 helpMsg += '【一、积分功能】\n1.1、Ai画图(@机器人 画一张xxxx)\n1.2、Ai对话(@机器人即可)\n1.3、IP溯源(溯源 ip)\n1.4、IP威胁查询(ip查询 ip)\n1.5、CMD5查询(md5查询 xxx)\n1.6、签到(签到)\n1.7、积分查询(积分查询)\n\n'
                 helpMsg += '【二、娱乐功能】\n2.1、美女图片(图片)\n2.2、美女视频(视频)\n2.3、摸鱼日历(摸鱼日历)\n2.4、舔狗日记(舔我)\n2.5、早报(早报)\n2.6、晚报(晚报)\n2.6、表情列表(表情列表)\n2.7、随机表情(随机表情, 有几率报错)\n'
                 helpMsg += '[爱心]=== NGCBot菜单 ===[爱心]\n'
-                self.wcf.send_text(f'@{senderName}\n{helpMsg}', receiver=roomId, aters=sender)
+                self.wcf.send_text(f'@{getIdName(self.wcf, sender, roomId)}\n{helpMsg}', receiver=roomId, aters=sender)
         elif msgType == 49:
             # 视频号解析
             objectId, objectNonceId = getWechatVideoData(content)
             if objectId and objectNonceId:
                 msg = self.Ams.getWechatVideo(objectId, objectNonceId)
                 if msg:
-                    self.wcf.send_text(f'@{senderName}\n{msg}', receiver=roomId, aters=sender)
+                    self.wcf.send_text(f'@{getIdName(self.wcf, sender, roomId)}\n{msg}', receiver=roomId, aters=sender)
 

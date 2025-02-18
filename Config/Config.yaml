@@ -355,7 +355,7 @@ apiServer:
       # Open_Ai接口
       openAiApi: 'https://api.xiaoai.plus/v1/chat/completions'
       # OpenAi Key
-      openAiKey: 'Bearer {key填这里，前面的Bearer保留}'
+      openAiKey: 'Bearer sk-'
       openAiModel: 'gpt-3.5-turbo'
     # 千帆大模型  ERNIE-4.0-Turbo-8K模型
     qianFan:
@@ -372,7 +372,7 @@ apiServer:
       # 应用中的Secret Key
       qfPicSecretKey: ''
       # 应用中的应用ID
-      qfPicAppid: '92991265'
+      qfPicAppid: ''
     # 腾讯混元大模型, 有免费额度
     hunYuan:
       # 腾讯云SecretId
@@ -383,17 +383,17 @@ apiServer:
     # Kimi大模型
     kiMi:
       kiMiApi: 'https://api.moonshot.cn/v1/chat/completions'
-      kiMiKey: ''
+      kiMiKey: 'sk-'
       kiMiModel: 'moonshot-v1-8k'
     # 智谱大模型
     bigModel:
       bigModelApi: 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
-      bigModelKey: 'Bearer {key填这里，前面的Bearer保留}'
+      bigModelKey: 'Bearer {key填这里，前面的Bearer保留} '
       bigModelModel: 'glm-4-plus'
     # DeepSeek 模型
     deepSeek:
       deepSeekApi: 'https://api.deepseek.com/chat/completions'
-      deepSeekKey: 'Bearer {key填这里，前面的Bearer保留}'
+      deepSeekKey: 'Bearer {key填这里，前面的Bearer保留} '
       deepSeekModel: 'deepseek-chat'
     # DeepSeek 本地模型
     localDeepSeek:
@@ -425,8 +425,6 @@ apiServer:
   dpVideoAnalysisAPi: 'https://api.dudunas.top/api/qushuiyin?AppSecret={}&text={}'
   # Dp接口 视频号解析
   dpWechatVideoApi: 'https://api.dudunas.top/api/vxdown?AppSecret={}&objectId={}&objectNonceId={}'
-  # 微步查询API
-  threatBookApi: 'https://api.threatbook.cn/v3/ip/query'
   # 高德地图API
   gaoDeApi: 'https://restapi.amap.com/v3/staticmap'
   # 埃文IP地址查询API

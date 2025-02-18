@@ -123,7 +123,7 @@ class FriendMsgHandle:
         acceptSendMsg = self.acceptFriendMsg.replace('\\n', '\n')
         self.wcf.send_text(acceptSendMsg, receiver=wxId)
         if ret:
-            op(f'[+]: 好友 {self.wcf.get_info_by_wxid(wxId).get("name")} 已自动通过 !')
+            op(f'[+]: 好友 {getIdName(self.wcf, wxId)} 已自动通过 !')
         else:
             op(f'[-]: 好友通过失败！！！')
 
@@ -290,4 +290,4 @@ class FriendMsgHandle:
 
 if __name__ == '__main__':
     Fmh = FriendMsgHandle(1)
-    Fmh.showWhiteRoom()
+    # Fmh.showWhiteRoom()

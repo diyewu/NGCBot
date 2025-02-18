@@ -69,7 +69,7 @@ def getAtData(wcf, msg):
     return atUserLists, noAtMsg.strip()
 
 
-def getIdName(wcf, Id):
+def getIdName(wcf, Id=None, roomId=None):
     """
     获取好友或者群聊昵称
     :return:
@@ -79,17 +79,20 @@ def getIdName(wcf, Id):
         name_list = wcf.query_sql("MicroMsg.db",
                                   f"SELECT UserName, NickName FROM Contact WHERE UserName = '{Id}';")
         if not name_list:
-            return getIdName(wcf, Id)
+            return getIdName(wcf, Id, roomId)
         name = name_list[0]['NickName']
         getIdNameInt += 1
         if getIdNameInt == 4:
             getIdNameInt = 0
-            return '未获取的昵称'
+            if '@chatroom' not in Id:
+                return wcf.get_alias_in_chatroom(Id, roomId)
+            else:
+                return roomId
         return name
     except Exception as e:
         op(f'[~]: 获取好友或者群聊昵称出现错误, 错误信息: {e}')
         time.sleep(1)
-        return getIdName(wcf, Id)
+        return getIdName(wcf, Id, roomId)
 
 
 
