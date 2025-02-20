@@ -6,7 +6,8 @@ import xml.etree.ElementTree as ET
 import Config.ConfigServer as Cs
 from OutPut.outPut import op
 from threading import Thread
-
+import time
+import xml.etree.ElementTree as ET
 
 class FriendMsgHandle:
     def __init__(self, wcf):
@@ -54,6 +55,8 @@ class FriendMsgHandle:
         self.acceptFriendMsg = configData['customMsg']['acceptFriendMsg']
         # 好友消息转发给管理员开关
         self.msgForwardAdmin = configData['systemConfig']['msgForwardAdmin']
+        # 记录每个好友已经匹配过的关键词
+        self.matched_keywords = {}
 
     def mainHandle(self, msg):
         content = msg.content.strip()
@@ -65,8 +68,9 @@ class FriendMsgHandle:
             if judgeEqualListWord(content, self.roomKeyWords.keys()):
                 # self.keyWordJoinRoom(sender, content)
                 Thread(target=self.keyWordJoinRoom, args=(sender, content)).start()
-            # 自定义关键词回复功能
-            elif judgeEqualListWord(content, self.customKeyWords.keys()):
+            # 自定义关键词回复功能，改成模糊匹配
+            # elif judgeEqualListWord(content, self.customKeyWords.keys()):
+            elif judgeInListWord(content, self.customKeyWords.keys()):
                 # self.customKeyWordMsg(sender, content)
                 Thread(target=self.customKeyWordMsg, args=(sender, content)).start()
             # 查看白名单群聊
@@ -86,8 +90,9 @@ class FriendMsgHandle:
                 # self.showBlackGh(sender, )
                 Thread(target=self.showBlackGh, args=(sender,)).start()
             # Ai对话 Ai锁功能 对超管没用
-            elif self.aiLock or sender in self.Administrators:
-                Thread(target=self.getAiMsg, args=(content, sender)).start()
+            # elif self.aiLock or sender in self.Administrators:
+            # elif not self.aiLock and sender not in self.Administrators:
+            #     Thread(target=self.getAiMsg, args=(content, sender)).start()
             # 超级管理员发消息转发给好友
             if judgeSplitAllEqualWord(content, self.sendMsgKeyWords):
                 Thread(target=self.sendFriendMsg, args=(content,)).start()
@@ -101,12 +106,17 @@ class FriendMsgHandle:
             # 暂时没用 等Hook作者更新 老版本微信有用
             elif '转账' in msg.content and self.acceptMoneyLock:
                 Thread(target=self.acceptMoney, args=(msg,)).start()
+            elif msg.type == 49 and sender in self.Administrators and '好友ID:' in msg.content:
+                Thread(target=self.forwardRefMsgToAdministrators, args=(content,)).start()
         # 红包消息处理 转发红包消息给主人
         if msgType == 10000 and '请在手机上查看' in msg.content:
             Thread(target=self.forwardRedPacketMsg, args=(sender,)).start()
         # 好友自动同意处理 暂时没用 老版本微信有用
         if msgType == 37 and self.acceptFriendLock:
             Thread(target=self.acceptFriend, args=(msg,)).start()
+        # 管理员引用消息，将内容转发给好友
+        # if msgType == 57:
+        #     Thread(target=self.forwardRefMsgToAdministrators, args=(msg,)).start()
 
     def acceptFriend(self, msg):
         """
@@ -123,7 +133,7 @@ class FriendMsgHandle:
         acceptSendMsg = self.acceptFriendMsg.replace('\\n', '\n')
         self.wcf.send_text(acceptSendMsg, receiver=wxId)
         if ret:
-            op(f'[+]: 好友 {getIdName(self.wcf, wxId)} 已自动通过 !')
+            op(f'[+]: 好友 {self.wcf.get_info_by_wxid(wxId).get("name")} 已自动通过 !')
         else:
             op(f'[-]: 好友通过失败！！！')
 
@@ -220,15 +230,38 @@ class FriendMsgHandle:
     def customKeyWordMsg(self, sender, content):
         """
         自定义关键词消息回复
-        :param sender:
-        :param content:
+        :param sender: 发送者
+        :param content: 好友发送的消息内容
         :return:
         """
-        for keyWord in self.customKeyWords.keys():
-            if judgeEqualWord(content, keyWord):
-                replyMsgLists = self.customKeyWords.get(keyWord)
-                for replyMsg in replyMsgLists:
-                    self.wcf.send_text(replyMsg, receiver=sender)
+        # 添加3秒的延迟
+        time.sleep(3)
+        if sender not in self.matched_keywords:
+            self.matched_keywords[sender] = set()
+
+        # if content not in self.matched_keywords[sender]:
+            # responses = self.customKeyWords.get(content, [])
+            # for response in responses:
+            #     if response.startswith('image:'):
+            #         picPath = response[6:]  # 去掉 'image:' 前缀
+            #         self.wcf.send_image(picPath, receiver=sender)
+            #     else:
+            #         self.wcf.send_text(response, receiver=sender)
+            # self.matched_keywords[sender].add(content)
+        for word in self.customKeyWords.keys():
+            if word in content:
+                if word not in self.matched_keywords[sender]:
+                    responses = self.customKeyWords.get(word, [])
+                    op(f'[+]: responses=== {responses} ')
+                    for response in responses:
+                        if response.startswith('image:'):
+                            picPath = response[6:]  # 去掉 'image:' 前缀
+                            op(f'[+]: picPath=== {picPath} ')
+                            self.wcf.send_image(picPath, receiver=sender)
+                        else:
+                            self.wcf.send_text(response, receiver=sender)
+                    self.matched_keywords[sender].add(word)
+
 
     def keyWordJoinRoom(self, sender, content):
         """
@@ -260,7 +293,8 @@ class FriendMsgHandle:
         :return:
         """
         wxId = content.split(' ')[1]
-        sendMsg = f'==== [爱心]来自超管的消息[爱心] ====\n\n{content.split(" ")[-1]}\n\n====== [爱心]NGCBot[爱心] ======'
+        # sendMsg = f'==== [爱心]来自超管的消息[爱心] ====\n\n{content.split(" ")[-1]}\n\n====== [爱心]NGCBot[爱心] ======'
+        sendMsg = content.split(" ")[-1]
         self.wcf.send_text(sendMsg, receiver=wxId)
 
     def getAiMsg(self, content, sender):
@@ -287,7 +321,45 @@ class FriendMsgHandle:
         for administrator in self.Administrators:
             self.wcf.send_text(forwardMsg, receiver=administrator)
 
+    @staticmethod
+    def extract_wxid_and_title_from_xml(content: str):
+        # 解析XML内容
+        root = ET.fromstring(content)
+        # 查找refermsg节点
+        refermsg_node = root.find('.//refermsg')
+        wxId = None
+        title = None
+        if refermsg_node is not None:
+            # 查找content节点
+            content_node = refermsg_node.find('content')
+            if content_node is not None:
+                content_text = content_node.text
+                # 使用正则表达式提取wxid
+                import re
+                match = re.search(r'好友ID: (\w+)', content_text)
+                if match:
+                    wxId = match.group(1)
+        # 查找title节点
+        title_node = root.find('.//title')
+        if title_node is not None:
+            title = title_node.text
+        return wxId, title
+    def forwardRefMsgToAdministrators(self, content):
+        """
+        好友消息转发给超级管理员 引用的方式
+        :param content:
+        :return:
+        """
+        wxId, title = self.extract_wxid_and_title_from_xml(content)
+        # sendMsg = f'==== [爱心]来自超管的消息[爱心] ====\n\n{content.split(" ")[-1]}\n\n====== [爱心]NGCBot[爱心] ======'
+        # sendMsg = content.split(" ")[-1]
+        if wxId:
+            self.wcf.send_text(title, receiver=wxId)
+        else:
+            print("未匹配到wxId")
+
+
 
 if __name__ == '__main__':
     Fmh = FriendMsgHandle(1)
-    # Fmh.showWhiteRoom()
+    Fmh.showWhiteRoom()

@@ -1,6 +1,6 @@
 ## 超级管理员配置
 Administrators:
-  - 'wxid_7bizfilssbwi22'
+  - 'wudi3081'
 
 ## 系统配置
 systemConfig:
@@ -8,7 +8,7 @@ systemConfig:
   systemCopyright: 'NGC660安全实验室'
   # 好友Ai开关
   # 1开/0关
-  aiLock: 1
+  aiLock: 0
   # 自动接收转账
   acceptMoneyLock: 1
   # 自动同意好友开关
@@ -51,6 +51,8 @@ customKeyWord:
   '关键词1':
     - '回复内容1'
     - '回复内容2'
+    #可以回复本地图片
+    #- 'image:C:\Users\boooot\Desktop\test.jpg'
   '关键词2':
     - '回复内容1'
     - '回复内容2'
